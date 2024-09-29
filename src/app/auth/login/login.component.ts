@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
-  imports: [FormsModule, ReactiveFormsModule]
+  imports: [ReactiveFormsModule]
 })
 export class LoginComponent {
   form = new FormGroup({
