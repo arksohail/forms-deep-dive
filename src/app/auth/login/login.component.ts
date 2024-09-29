@@ -14,7 +14,12 @@ export class LoginComponent {
   
 
   onSubmit(formData: NgForm) {
+    if(formData.form.invalid) {
+      return;
+    }
     console.log("EMAIL", formData.form.value.email);
     console.log("PASSWORD", formData.form.value.password);
+
+    console.log(formData.form.valid);    
   }
 }
