@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 
 function mustContainaQuesionMark(control: AbstractControl) {
@@ -9,6 +10,13 @@ function mustContainaQuesionMark(control: AbstractControl) {
   return { doesNotContainQuestionMark: true }
 }
 
+let initialemailvalue = '';
+const savedForm = window.localStorage.getItem("saved-login-form");
+if (savedForm) {
+  const loadedForm = JSON.parse(savedForm);
+  initialemailvalue = loadedForm.email
+}
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -16,10 +24,12 @@ function mustContainaQuesionMark(control: AbstractControl) {
   styleUrl: './login.component.css',
   imports: [ReactiveFormsModule]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+
+  destroyRef = inject(DestroyRef);
 
   form = new FormGroup({
-    email: new FormControl("", {
+    email: new FormControl(initialemailvalue, {
       validators: [Validators.email, Validators.required]
     }),
     password: new FormControl("", {
@@ -38,5 +48,37 @@ export class LoginComponent {
     console.log("FORM", this.form);
     console.log("EMAIL", this.form.value.email);
     console.log("PASSWORD", this.form.value.password);
+  }
+
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+
+    // const savedForm = window.localStorage.getItem("saved-login-form");
+    // if (savedForm) {
+    //   const loadedForm = JSON.parse(savedForm);
+    //   // this.form.controls.email.setValue(loadedForm.email);
+    //   this.form.patchValue({
+    //     email: loadedForm.email,
+    //   })
+    // }
+
+    const subscription = this.form
+      .valueChanges
+      .pipe(
+        debounceTime(3000),
+        distinctUntilChanged((prev, curr) => prev.email === curr.email)
+      )
+      .subscribe({
+        next: (val) => {
+          const loadEmail = val.email;
+          let savedEmail: string;
+          if (loadEmail) {
+            savedEmail = JSON.stringify({ email: val.email });
+            window.localStorage.setItem("saved-login-form", savedEmail);
+          }
+        }
+      });
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
 }
