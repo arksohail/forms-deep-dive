@@ -24,6 +24,11 @@ export class SignupComponent {
       city: new FormControl("", { validators: [Validators.required] }),
     }),
     role: new FormControl<'student' | 'teacher' | 'employee' | 'founder' | 'other'>("student", { validators: [Validators.required] }),
+    source: new FormArray([
+      new FormControl(false),
+      new FormControl(false),
+      new FormControl(false),
+    ]),
     agree: new FormControl<boolean>(false, { validators: [Validators.required] }),
   });
 
