@@ -3,4 +3,14 @@
   <h1>Angular Forms</h1>
 </header>
 
-<app-login />
+<p style="text-align: center;">
+  <button class="button" (click)="toggleSignUp = !toggleSignUp">
+    {{toggleSignUp ? 'Login' : 'Sign Up'}}
+  </button>
+</p>
+
+@if (toggleSignUp) {
+  <app-signup />
+} @else {
+  <app-login />
+}
